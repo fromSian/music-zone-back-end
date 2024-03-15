@@ -9,4 +9,5 @@ using django django-rest-framework.
 
 
 
-
+# 說明
+1. swagger-ui using [drf_yasg](https://drf-yasg.readthedocs.io/en/stable/)
