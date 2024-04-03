@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # 3rd packages
     "drf_yasg",
+    "rest_framework",
 ]
 
 MIDDLEWARE = [
@@ -116,3 +117,7 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+from rest_framework import request
+
+# django-rest-framework settings
+REST_FRAMEWORK = {"UNAUTHENTICATED_USER": None}
