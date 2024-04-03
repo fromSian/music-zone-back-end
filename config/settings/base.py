@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # local app
+    "content",
     # 3rd packages
     "drf_yasg",
     "rest_framework",
