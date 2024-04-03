@@ -122,4 +122,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 from rest_framework import request
 
 # django-rest-framework settings
-REST_FRAMEWORK = {"UNAUTHENTICATED_USER": None}
+REST_FRAMEWORK = {
+    "UNAUTHENTICATED_USER": None,
+    "DEFAULT_PAGINATION_CLASS": "content.pagination.CustomPagination",
+}
