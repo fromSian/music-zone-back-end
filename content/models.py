@@ -144,6 +144,7 @@ class Song(models.Model):
     # an album can have many songs, but a song only can be associated with on album
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
     artist = models.ManyToManyField(Artist, related_name="song_artist")
+    track = models.PositiveIntegerField(blank=False, verbose_name="曲序")
 
     def __str__(self):
         return self.name
