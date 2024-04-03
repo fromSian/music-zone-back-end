@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Artist, Album, Artist, Song
+from .models import Artist, Album, Artist, Song, Playlist
 
 
 class ArtistSerializer(serializers.ModelSerializer):
@@ -64,3 +64,9 @@ class SongWriteSerializer(serializers.ModelSerializer):
             "create_time": {"read_only": True},
             "update_time": {"read_only": True},
         }
+
+
+class PlaylistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Playlist
+        exclude = ("songs",)

@@ -147,3 +147,29 @@ class Song(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Playlist(models.Model):
+    id = models.UUIDField(
+        unique=True, default=uuid.uuid4, editable=False, primary_key=True
+    )
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
+    update_time = models.DateTimeField(auto_now_add=True, verbose_name="更新时间")
+    name = models.CharField(
+        verbose_name="歌单名称",
+        max_length=255,
+        blank=False,
+        db_index=True,
+        validators=[],
+    )
+    image = models.FileField(
+        upload_to="album/%Y/%m/%d",
+        max_length=100,
+        blank=True,
+        null=True,
+        validators=[validate_image_content_type, validate_image_size],
+    )
+    songs = models.ManyToManyField(Song, related_name="playlist_song")
+
+    def __str__(self):
+        return self.name
