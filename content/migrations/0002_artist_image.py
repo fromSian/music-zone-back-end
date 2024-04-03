@@ -7,13 +7,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('content', '0001_initial'),
+        ("content", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='artist',
-            name='image',
-            field=models.FileField(blank=True, null=True, upload_to='artist/%Y/%m/%d', validators=[content.models.validate_artist_image_content_type, content.models.validate_artist_image_size]),
+            model_name="artist",
+            name="image",
+            field=models.FileField(
+                blank=True,
+                null=True,
+                upload_to="artist/%Y/%m/%d",
+                validators=[
+                    content.models.validate_image_content_type,
+                    content.models.validate_image_size,
+                ],
+            ),
         ),
     ]
