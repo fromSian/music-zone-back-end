@@ -19,11 +19,6 @@ from rest_framework import status
 # Create your views here.
 
 
-@api_view(["GET"])
-def test(resquest):
-    return Response("success")
-
-
 class ArtistViewSet(ModelViewSet):
     queryset = Artist.objects.all()
     serializer_class = ArtistSerializer
@@ -93,6 +88,17 @@ class PlaylistViewSet(ModelViewSet):
             return Response("failed", status=status.HTTP_400_BAD_REQUEST)
 
 
+def add_count(target_id, type):
+    obj = None
+    if PlayRecord.objects.filter(target_id=target_id).exists():
+        obj = PlayRecord.objects.get(target_id=target_id)
+        obj.count = obj.count + 1
+        obj.save()
+    else:
+        obj = PlayRecord.objects.create(target_id=target_id, type=type, count=1)
+    return obj
+
+
 class PlayRecordViewSet(ListModelMixin, GenericViewSet):
     queryset = PlayRecord.objects.all()
     serializer_class = PlayRecordSerializer
@@ -101,17 +107,11 @@ class PlayRecordViewSet(ListModelMixin, GenericViewSet):
     def add_record(self, request):
         serializer = self.get_serializer(data=request.data)
         target_id = request.data.get("target_id")
+        type = request.data.get("type")
         if serializer.is_valid():
-            if PlayRecord.objects.filter(target_id=target_id).exists():
-                obj = PlayRecord.objects.get(target_id=target_id)
-                obj.count = obj.count + 1
-                obj.save()
-                read = PlayRecordSerializer(obj)
-                return Response(read.data, status=status.HTTP_200_OK)
-            else:
-                obj = PlayRecord.objects.create(**serializer.data, count=1)
-                read = PlayRecordSerializer(obj)
-                return Response(read.data, status=status.HTTP_200_OK)
+            obj = add_count(target_id, type)
+            read = PlayRecordSerializer(obj)
+            return Response(read.data, status=status.HTTP_200_OK)
 
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
