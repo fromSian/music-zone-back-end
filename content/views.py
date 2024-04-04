@@ -8,6 +8,7 @@ from .serializers import (
     ArtistSerializer,
     AlbumWriteSerializer,
     AlbumReadSerializer,
+    AlbumWithSongReadSerializer,
     SongWriteSerializer,
     SongReadSerializer,
     PlaylistSerializer,
@@ -32,7 +33,9 @@ class AlbumViewSet(ModelViewSet):
     queryset = Album.objects.all()
 
     def get_serializer_class(self):
-        if self.action == "retrieve" or self.action == "list":
+        if self.action == "retrieve":
+            return AlbumWithSongReadSerializer
+        elif self.action == "list":
             return AlbumReadSerializer
         else:
             return AlbumWriteSerializer

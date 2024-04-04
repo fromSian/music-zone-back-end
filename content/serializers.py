@@ -24,7 +24,7 @@ class AlbumWriteSerializer(serializers.ModelSerializer):
         }
 
 
-class AlbumReadSerializer(serializers.ModelSerializer):
+class AlbumWithSongReadSerializer(serializers.ModelSerializer):
     artist = ArtistSerializer(many=True)
     songs = serializers.SerializerMethodField()
 
@@ -38,16 +38,16 @@ class AlbumReadSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
-class AlbumForSongSerializer(serializers.ModelSerializer):
+class AlbumReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
-        # fields = "__all__"
-        exclude = ("artist",)
+        fields = "__all__"
+        # exclude = ("artist",)
 
 
 class SongReadSerializer(serializers.ModelSerializer):
     artist = ArtistSerializer(many=True)
-    album = AlbumForSongSerializer()
+    album = AlbumReadSerializer()
 
     class Meta:
         model = Song
