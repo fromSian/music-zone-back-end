@@ -49,7 +49,7 @@ class Artist(models.Model):
         unique=True, default=uuid.uuid4, editable=False, primary_key=True
     )
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
-    update_time = models.DateTimeField(auto_now_add=True, verbose_name="更新时间")
+    update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
     name = models.CharField(
         verbose_name="艺人名称",
         max_length=255,
@@ -74,7 +74,7 @@ class Album(models.Model):
         unique=True, default=uuid.uuid4, editable=False, primary_key=True
     )
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
-    update_time = models.DateTimeField(auto_now_add=True, verbose_name="更新时间")
+    update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
     name = models.CharField(
         verbose_name="专辑名称",
         max_length=255,
@@ -129,7 +129,7 @@ class Song(models.Model):
         unique=True, default=uuid.uuid4, editable=False, primary_key=True
     )
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
-    update_time = models.DateTimeField(auto_now_add=True, verbose_name="更新时间")
+    update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
     name = models.CharField(
         verbose_name="歌曲名称",
         max_length=255,
@@ -157,7 +157,7 @@ class Playlist(models.Model):
         unique=True, default=uuid.uuid4, editable=False, primary_key=True
     )
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
-    update_time = models.DateTimeField(auto_now_add=True, verbose_name="更新时间")
+    update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
     name = models.CharField(
         verbose_name="歌单名称",
         max_length=255,
@@ -183,7 +183,7 @@ class PlayRecord(models.Model):
         unique=True, default=uuid.uuid4, editable=False, primary_key=True
     )
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
-    update_time = models.DateTimeField(auto_now_add=True, verbose_name="更新时间")
+    update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
     TYPE_CHOICES = [
         ("PLAYLIST", "Playlist"),
         ("ALBUM", "Album"),
