@@ -39,6 +39,8 @@ class AlbumWithSongReadSerializer(serializers.ModelSerializer):
 
 
 class AlbumReadSerializer(serializers.ModelSerializer):
+    artist = ArtistSerializer(many=True)
+
     class Meta:
         model = Album
         fields = "__all__"
