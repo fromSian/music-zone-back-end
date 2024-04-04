@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
-from .models import Artist, Album, Song, Playlist
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.mixins import ListModelMixin
+from .models import Artist, Album, Song, Playlist, PlayRecord
 from .serializers import (
     ArtistSerializer,
     AlbumWriteSerializer,
@@ -10,6 +11,7 @@ from .serializers import (
     SongWriteSerializer,
     SongReadSerializer,
     PlaylistSerializer,
+    PlayRecordSerializer,
 )
 from rest_framework import status
 
@@ -86,3 +88,27 @@ class PlaylistViewSet(ModelViewSet):
             return Response("success", status=status.HTTP_200_OK)
         except Exception:
             return Response("failed", status=status.HTTP_400_BAD_REQUEST)
+
+
+class PlayRecordViewSet(ListModelMixin, GenericViewSet):
+    queryset = PlayRecord.objects.all()
+    serializer_class = PlayRecordSerializer
+
+    @action(detail=False, methods=["post"])
+    def add_record(self, request):
+        serializer = self.get_serializer(data=request.data)
+        target_id = request.data.get("target_id")
+        if serializer.is_valid():
+            if PlayRecord.objects.filter(target_id=target_id).exists():
+                obj = PlayRecord.objects.get(target_id=target_id)
+                obj.count = obj.count + 1
+                obj.save()
+                read = PlayRecordSerializer(obj)
+                return Response(read.data, status=status.HTTP_200_OK)
+            else:
+                obj = PlayRecord.objects.create(**serializer.data, count=1)
+                read = PlayRecordSerializer(obj)
+                return Response(read.data, status=status.HTTP_200_OK)
+
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

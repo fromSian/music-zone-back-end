@@ -13,5 +13,7 @@ router.register("songs", views.SongViewSet, basename="songs")
 
 router.register("playlists", views.PlaylistViewSet, basename="playlists")
 
+router.register("play-record", views.PlayRecordViewSet, basename="play record")
+
 urlpatterns = []
 urlpatterns = urlpatterns + router.urls

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Artist, Album, Artist, Song, Playlist
+from .models import Artist, Album, Artist, Song, Playlist, PlayRecord
 
 
 class ArtistSerializer(serializers.ModelSerializer):
@@ -70,3 +70,26 @@ class PlaylistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Playlist
         exclude = ("songs",)
+
+
+class PlayRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PlayRecord
+        fields = "__all__"
+        extra_kwargs = {
+            "id": {"read_only": True},
+            "count": {"read_only": True},
+            "create_time": {"read_only": True},
+            "update_time": {"read_only": True},
+        }
+
+    def validate_target_id(self, value):
+        if (
+            Artist.objects.filter(id=value).exists()
+            or Album.objects.filter(id=value).exists()
+            or Song.objects.filter(id=value).exists()
+            or Playlist.objects.filter(id=value).exists()
+        ):
+            return value
+        else:
+            raise serializers.ValidationError("not valid target_id")

@@ -3,6 +3,8 @@ import uuid
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
 # Create your models here.
 
@@ -174,3 +176,33 @@ class Playlist(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class PlayRecord(models.Model):
+    id = models.UUIDField(
+        unique=True, default=uuid.uuid4, editable=False, primary_key=True
+    )
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
+    update_time = models.DateTimeField(auto_now_add=True, verbose_name="更新时间")
+    TYPE_CHOICES = [
+        ("PLAYLIST", "Playlist"),
+        ("ALBUM", "Album"),
+        ("SONG", "Song"),
+        ("ARTIST", "Artist"),
+    ]
+    type = models.CharField(
+        max_length=10, choices=TYPE_CHOICES, blank=False, verbose_name="播放内容类型"
+    )
+    target_id = models.UUIDField(blank=False, verbose_name="播放内容id")
+
+    count = models.PositiveIntegerField(blank=False, verbose_name="播放次数", default=1)
+
+    def __str__(self):
+        return self.name
+
+
+# recevie sender
+@receiver(post_delete, sender=Artist)
+def delete_nouse_record(sender, instance, **kwargs):
+    playRecords = PlayRecord.objects.filter(target_id=instance.id)
+    playRecords.delete()
