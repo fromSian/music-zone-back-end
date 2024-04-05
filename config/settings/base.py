@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # 3rd packages
     "drf_yasg",
     "rest_framework",
+    "django_filters",
 ]
 
 MIDDLEWARE = [
@@ -125,6 +126,7 @@ from rest_framework import request
 REST_FRAMEWORK = {
     "UNAUTHENTICATED_USER": None,
     "DEFAULT_PAGINATION_CLASS": "content.pagination.CustomPagination",
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
 }
 
 

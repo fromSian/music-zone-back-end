@@ -15,6 +15,7 @@ from .serializers import (
     PlaylistSerializer,
     PlayRecordSerializer,
 )
+from .filter import PlayRecordFilter
 from rest_framework import status
 
 # Create your views here.
@@ -108,9 +109,10 @@ def add_count(target_id, type):
 class PlayRecordViewSet(ListModelMixin, GenericViewSet):
     queryset = PlayRecord.objects.all()
     serializer_class = PlayRecordSerializer
+    filterset_class = PlayRecordFilter
 
     @action(detail=False, methods=["post"])
-    def add_record(self, request):
+    def add(self, request):
         serializer = self.get_serializer(data=request.data)
         target_id = request.data.get("target_id")
         type = request.data.get("type")
@@ -121,3 +123,27 @@ class PlayRecordViewSet(ListModelMixin, GenericViewSet):
 
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def list(self, request, *args, **kwargs):
+        sort = request.query_params.get("sort")
+        top = request.query_params.get("top")
+        order = request.query_params.get("order")
+        queryset = self.filter_queryset(self.get_queryset())
+
+        if sort not in [field.name for field in PlayRecord._meta.get_fields()]:
+            sort = "create_time"
+
+        if order == "DESC":
+            order = "-"
+        else:
+            order = ""
+
+        queryset = queryset.order_by("{0}{1}".format(order, sort))[:top]
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
