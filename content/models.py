@@ -64,6 +64,7 @@ class Artist(models.Model):
         null=True,
         validators=[validate_image_content_type, validate_image_size],
     )
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
@@ -91,6 +92,7 @@ class Album(models.Model):
     )
     # an album can be associated with many artists, and an artist can have many albums
     artist = models.ManyToManyField(Artist, related_name="album_artist")
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
@@ -147,6 +149,7 @@ class Song(models.Model):
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
     artist = models.ManyToManyField(Artist, related_name="song_artist")
     track = models.PositiveIntegerField(blank=False, verbose_name="曲序")
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
@@ -173,6 +176,7 @@ class Playlist(models.Model):
         validators=[validate_image_content_type, validate_image_size],
     )
     songs = models.ManyToManyField(Song, related_name="playlist_song")
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
@@ -196,13 +200,52 @@ class PlayRecord(models.Model):
     target_id = models.UUIDField(blank=False, verbose_name="播放内容id")
 
     count = models.PositiveIntegerField(blank=False, verbose_name="播放次数", default=1)
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
 
 
 # recevie sender
+
+"""
+when a playlist/album/song/artist is deleted, the play records need to be deleted too.
+"""
+
+
+@receiver(post_delete, sender=Playlist)
+@receiver(post_delete, sender=Album)
+@receiver(post_delete, sender=Song)
 @receiver(post_delete, sender=Artist)
 def delete_nouse_record(sender, instance, **kwargs):
     playRecords = PlayRecord.objects.filter(target_id=instance.id)
     playRecords.delete()
+
+
+"""
+when a artist is deleted, the associated songs and albums need to be deleted too.
+"""
+
+
+@receiver(post_delete, sender=Artist)
+def delete_associated_albums(sender, instance, **kwargs):
+    albums = Album.objects.filter(artist=instance)
+    albums.delete()
+
+
+@receiver(post_delete, sender=Artist)
+def delete_associated_songs(sender, instance, **kwargs):
+    songs = Song.objects.filter(artist=instance)
+    songs.delete()
+
+
+"""
+when a song is deleted, need to remove this song from playlists that includes this song.
+"""
+
+
+@receiver(post_delete, sender=Song)
+def remove_deleted_song(sender, instance, **kwargs):
+    playlists = Playlist.objects.filter(songs__id=instance.id)
+    for playlist in playlists:
+        playlist.songs.remove(instance)
