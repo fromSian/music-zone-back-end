@@ -6,6 +6,7 @@ from rest_framework.mixins import ListModelMixin
 from .models import Artist, Album, Song, Playlist, PlayRecord
 from .serializers import (
     ArtistSerializer,
+    ArtistWithAlbumSerializer,
     AlbumWriteSerializer,
     AlbumReadSerializer,
     AlbumWithSongReadSerializer,
@@ -21,7 +22,12 @@ from rest_framework import status
 
 class ArtistViewSet(ModelViewSet):
     queryset = Artist.objects.all()
-    serializer_class = ArtistSerializer
+
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return ArtistWithAlbumSerializer
+        else:
+            return ArtistSerializer
 
 
 class AlbumViewSet(ModelViewSet):

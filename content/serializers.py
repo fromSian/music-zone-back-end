@@ -13,6 +13,24 @@ class ArtistSerializer(serializers.ModelSerializer):
         }
 
 
+class ArtistWithAlbumSerializer(serializers.ModelSerializer):
+    albums = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Artist
+        fields = "__all__"
+        extra_kwargs = {
+            "id": {"read_only": True},
+            "create_time": {"read_only": True},
+            "update_time": {"read_only": True},
+        }
+
+    def get_albums(self, obj):
+        albums = Album.objects.filter(artist=obj)
+        serializer = AlbumReadSerializer(albums, many=True)
+        return serializer.data
+
+
 class AlbumWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
