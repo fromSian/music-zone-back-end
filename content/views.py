@@ -134,7 +134,7 @@ class PlayRecordViewSet(ListModelMixin, GenericViewSet):
 
         re_compile = re.compile("[-,+]")
         for o in order_list:
-            o.strip()
+            o = o.strip()
             _o = re_compile.sub("", o)
             if _o not in [field.name for field in PlayRecord._meta.get_fields()]:
                 order_list.remove(o)
