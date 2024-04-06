@@ -93,6 +93,8 @@ class PlaylistSerializer(serializers.ModelSerializer):
 
 
 class PlayRecordSerializer(serializers.ModelSerializer):
+    detail = serializers.SerializerMethodField()
+
     class Meta:
         model = PlayRecord
         fields = "__all__"
@@ -113,3 +115,23 @@ class PlayRecordSerializer(serializers.ModelSerializer):
             return value
         else:
             raise serializers.ValidationError("not valid target_id")
+
+    def get_detail(self, obj):
+        if obj.type == "PLAYLIST":
+            detail_instance = Playlist.objects.filter(id=obj.target_id).first()
+            serializer_class = PlaylistSerializer
+        elif obj.type == "SONG":
+            detail_instance = Song.objects.filter(id=obj.target_id).first()
+            serializer_class = SongReadSerializer
+        elif obj.type == "ALBUM":
+            detail_instance = Album.objects.filter(id=obj.target_id).first()
+            serializer_class = AlbumReadSerializer
+        elif obj.type == "ARTIST":
+            detail_instance = Artist.objects.filter(id=obj.target_id).first()
+            serializer_class = ArtistSerializer
+
+        if detail_instance:
+            serializer = serializer_class(detail_instance)
+            return serializer.data
+        else:
+            return None

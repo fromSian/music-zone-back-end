@@ -17,6 +17,7 @@ from .serializers import (
 )
 from .filter import PlayRecordFilter
 from rest_framework import status
+import re
 
 # Create your views here.
 
@@ -125,20 +126,23 @@ class PlayRecordViewSet(ListModelMixin, GenericViewSet):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def list(self, request, *args, **kwargs):
-        sort = request.query_params.get("sort")
         top = request.query_params.get("top")
         order = request.query_params.get("order")
         queryset = self.filter_queryset(self.get_queryset())
 
-        if sort not in [field.name for field in PlayRecord._meta.get_fields()]:
-            sort = "create_time"
+        order_list = order.split(",")
 
-        if order == "DESC":
-            order = "-"
+        re_compile = re.compile("[-,+]")
+        for o in order_list:
+            o.strip()
+            _o = re_compile.sub("", o)
+            if _o not in [field.name for field in PlayRecord._meta.get_fields()]:
+                order_list.remove(o)
+
+        if len(order_list):
+            queryset = queryset.order_by(", ".join(order_list))[:top]
         else:
-            order = ""
-
-        queryset = queryset.order_by("{0}{1}".format(order, sort))[:top]
+            queryset = queryset[:top]
 
         page = self.paginate_queryset(queryset)
         if page is not None:
