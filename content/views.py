@@ -89,7 +89,7 @@ class PlaylistViewSet(ModelViewSet):
         except Exception:
             return Response("failed", status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=["delete"])
+    @action(detail=True, methods=["post"])
     def remove_song(self, request, pk):
         song_id = request.data.get("song")
         playlist = self.get_object()

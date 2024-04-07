@@ -55,6 +55,7 @@ class SongReadSerializer(serializers.ModelSerializer):
     artist = ArtistSerializer(many=True)
     album = AlbumReadSerializer()
     audio = serializers.SerializerMethodField()
+    isLiked = serializers.SerializerMethodField()
 
     class Meta:
         model = Song
@@ -64,6 +65,7 @@ class SongReadSerializer(serializers.ModelSerializer):
             "audio",
             "duration",
             "track",
+            "isLiked",
             "description",
             "artist",
             "album",
@@ -77,6 +79,10 @@ class SongReadSerializer(serializers.ModelSerializer):
             return obj.audio.url
         url = request.build_absolute_uri(obj.audio.url)
         return url
+
+    def get_isLiked(self, obj):
+        loves = Playlist.objects.first()
+        return loves.songs.filter(id=obj.id).exists()
 
 
 class AlbumWithSongReadSerializer(serializers.ModelSerializer):
