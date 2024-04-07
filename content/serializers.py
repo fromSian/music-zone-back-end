@@ -71,7 +71,17 @@ class SongReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Song
-        fields = "__all__"
+        fields = (
+            "id",
+            "name",
+            "duration",
+            "track",
+            "description",
+            "artist",
+            "album",
+            "create_time",
+            "update_time",
+        )
 
 
 class SongWriteSerializer(serializers.ModelSerializer):
