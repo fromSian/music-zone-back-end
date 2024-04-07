@@ -42,20 +42,6 @@ class AlbumWriteSerializer(serializers.ModelSerializer):
         }
 
 
-class AlbumWithSongReadSerializer(serializers.ModelSerializer):
-    artist = ArtistSerializer(many=True)
-    songs = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Album
-        fields = "__all__"
-
-    def get_songs(self, obj):
-        songs = Song.objects.filter(album=obj)
-        serializer = SongReadSerializer(songs, many=True)
-        return serializer.data
-
-
 class AlbumReadSerializer(serializers.ModelSerializer):
     artist = ArtistSerializer(many=True)
 
@@ -68,12 +54,14 @@ class AlbumReadSerializer(serializers.ModelSerializer):
 class SongReadSerializer(serializers.ModelSerializer):
     artist = ArtistSerializer(many=True)
     album = AlbumReadSerializer()
+    audio = serializers.SerializerMethodField()
 
     class Meta:
         model = Song
         fields = (
             "id",
             "name",
+            "audio",
             "duration",
             "track",
             "description",
@@ -82,6 +70,29 @@ class SongReadSerializer(serializers.ModelSerializer):
             "create_time",
             "update_time",
         )
+
+    def get_audio(self, obj):
+        request = self.context.get("request")
+        if not request:
+            return obj.audio.url
+        url = request.build_absolute_uri(obj.audio.url)
+        return url
+
+
+class AlbumWithSongReadSerializer(serializers.ModelSerializer):
+    artist = ArtistSerializer(many=True)
+    songs = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Album
+        fields = "__all__"
+
+    def get_songs(self, obj):
+        songs = Song.objects.filter(album=obj)
+        serializer = SongReadSerializer(
+            songs, many=True, context={"request": self.context.get("request")}
+        )
+        return serializer.data
 
 
 class SongWriteSerializer(serializers.ModelSerializer):
@@ -127,21 +138,23 @@ class PlayRecordSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("not valid target_id")
 
     def get_detail(self, obj):
-        if obj.type == "PLAYLIST":
+        if obj.type == "PLAYLISTS":
             detail_instance = Playlist.objects.filter(id=obj.target_id).first()
             serializer_class = PlaylistSerializer
-        elif obj.type == "SONG":
+        elif obj.type == "SONGS":
             detail_instance = Song.objects.filter(id=obj.target_id).first()
             serializer_class = SongReadSerializer
-        elif obj.type == "ALBUM":
+        elif obj.type == "ALBUMS":
             detail_instance = Album.objects.filter(id=obj.target_id).first()
             serializer_class = AlbumReadSerializer
-        elif obj.type == "ARTIST":
+        elif obj.type == "ARTISTS":
             detail_instance = Artist.objects.filter(id=obj.target_id).first()
             serializer_class = ArtistSerializer
 
         if detail_instance:
-            serializer = serializer_class(detail_instance)
+            serializer = serializer_class(
+                detail_instance, context={"_self_request": self.context.get("request")}
+            )
             return serializer.data
         else:
             return None

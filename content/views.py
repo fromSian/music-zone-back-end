@@ -67,11 +67,15 @@ class PlaylistViewSet(ModelViewSet):
         page = self.paginate_queryset(queryset=songs_queryset)
 
         if page is not None:
-            serializer = SongReadSerializer(page, many=True)
+            serializer = SongReadSerializer(
+                page, many=True, context={"_self_request": request}
+            )
 
             return self.get_paginated_response(serializer.data)
 
-        serializer = SongReadSerializer(songs_queryset, many=True)
+        serializer = SongReadSerializer(
+            songs_queryset, many=True, context={"request": request}
+        )
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -127,7 +131,7 @@ class PlayRecordViewSet(ListModelMixin, GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         top = request.query_params.get("top")
-        order = request.query_params.get("order")
+        order = request.query_params.get("order", "")
         queryset = self.filter_queryset(self.get_queryset())
 
         order_list = order.split(",")

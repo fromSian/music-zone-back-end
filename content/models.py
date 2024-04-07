@@ -196,10 +196,10 @@ class PlayRecord(models.Model):
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
     TYPE_CHOICES = [
-        ("PLAYLIST", "Playlist"),
-        ("ALBUM", "Album"),
-        ("SONG", "Song"),
-        ("ARTIST", "Artist"),
+        ("PLAYLISTS", "Playlist"),
+        ("ALBUMS", "Album"),
+        ("SONGS", "Song"),
+        ("ARTISTS", "Artist"),
     ]
     type = models.CharField(
         max_length=10, choices=TYPE_CHOICES, blank=False, verbose_name="播放内容类型"
