@@ -8,11 +8,14 @@ class PlayRecordFilter(filters.FilterSet):
     type = filters.Filter(method="filter_type")
 
     def filter_type(self, queryset, name, value):
-        value_list = value.split(",")
-        target_value_list = []
-        for v in value_list:
-            target_value_list.append(v.strip())
-        return queryset.filter(type__in=target_value_list)
+        if value == "ALL":
+            return queryset
+        else:
+            value_list = value.split(",")
+            target_value_list = []
+            for v in value_list:
+                target_value_list.append(v.strip())
+            return queryset.filter(type__in=target_value_list)
 
     class Meta:
         model = PlayRecord
