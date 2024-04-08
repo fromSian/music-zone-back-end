@@ -156,3 +156,21 @@ class PlayRecordSerializer(serializers.ModelSerializer):
             return serializer.data
         else:
             return None
+
+
+class SongSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Song
+        fields = ("id", "name", "description", "album")
+
+
+class AlbumSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Album
+        fields = ("id", "name", "description")
+
+
+class PlaylistSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Playlist
+        fields = ("id", "name", "description")

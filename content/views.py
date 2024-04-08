@@ -14,10 +14,14 @@ from .serializers import (
     SongReadSerializer,
     PlaylistSerializer,
     PlayRecordSerializer,
+    SongSearchSerializer,
+    AlbumSearchSerializer,
+    PlaylistSearchSerializer,
 )
 from .filter import PlayRecordFilter
 from rest_framework import status
 import re
+from django.db.models import Q
 
 # Create your views here.
 
@@ -155,3 +159,34 @@ class PlayRecordViewSet(ListModelMixin, GenericViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+
+
+@api_view(http_method_names=["POST"])
+def search(request):
+    keyword = request.data.get("keyword")
+    songs = Song.objects.filter(
+        Q(name__icontains=keyword) | Q(description__icontains=keyword)
+    )
+    songs_serializer = SongSearchSerializer(songs, many=True)
+
+    albums = Album.objects.filter(
+        Q(name__icontains=keyword) | Q(description__icontains=keyword)
+    )
+    albums_serializer = AlbumSearchSerializer(albums, many=True)
+
+    playlists = Playlist.objects.filter(
+        Q(name__icontains=keyword) | Q(description__icontains=keyword)
+    )
+    playlists_serializer = PlaylistSearchSerializer(playlists, many=True)
+
+    return Response(
+        {
+            "total": len(songs_serializer.data)
+            + len(albums_serializer.data)
+            + len(playlists_serializer.data),
+            "songs": songs_serializer.data,
+            "albums": albums_serializer.data,
+            "playlists": playlists_serializer.data,
+        },
+        status=status.HTTP_200_OK,
+    )
