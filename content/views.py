@@ -68,7 +68,7 @@ class PlaylistViewSet(ModelViewSet):
 
         if page is not None:
             serializer = SongReadSerializer(
-                page, many=True, context={"_self_request": request}
+                page, many=True, context={"request": request}
             )
 
             return self.get_paginated_response(serializer.data)
