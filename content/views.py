@@ -161,6 +161,16 @@ class PlayRecordViewSet(ListModelMixin, GenericViewSet):
         return Response(serializer.data)
 
 
+@api_view(http_method_names=["GET"])
+def get_love_playlist(request):
+    playlist = Playlist.objects.all().first()
+    if playlist:
+        serialzer = PlaylistSerializer(playlist)
+        return Response(serialzer.data, status=status.HTTP_200_OK)
+    else:
+        return Response(False, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(http_method_names=["POST"])
 def search(request):
     keyword = request.data.get("keyword")
@@ -190,3 +200,12 @@ def search(request):
         },
         status=status.HTTP_200_OK,
     )
+
+
+@api_view(http_method_names=["POST"])
+def clear(request):
+    Playlist.objects.all().delete()
+    Song.objects.all().delete()
+    Album.objects.all().delete()
+    Artist.objects.all().delete()
+    return Response("success")

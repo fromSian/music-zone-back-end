@@ -15,5 +15,9 @@ router.register("playlists", views.PlaylistViewSet, basename="playlists")
 
 router.register("play-record", views.PlayRecordViewSet, basename="play record")
 
-urlpatterns = [path("search/", views.search, name="search")]
+urlpatterns = [
+    path("search/", views.search, name="search"),
+    path("clear/", views.clear, name="clear"),
+    path("get_love_playlist/", views.get_love_playlist, name="get_love_playlist"),
+]
 urlpatterns = urlpatterns + router.urls

@@ -86,7 +86,7 @@ class AlbumWithSongReadSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_songs(self, obj):
-        songs = Song.objects.filter(album=obj)
+        songs = Song.objects.filter(album=obj).order_by("track")
         serializer = SongReadSerializer(
             songs, many=True, context={"request": self.context.get("request")}
         )
