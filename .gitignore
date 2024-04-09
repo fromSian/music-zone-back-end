@@ -5,3 +5,16 @@ venv
 **/migrations/
 
 **/db.sqlite3
+
+config/media
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
