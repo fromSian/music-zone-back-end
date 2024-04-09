@@ -13,14 +13,14 @@ pip install -r requirements
 
 3. database migrate
 
-```python
+```bash
 python manage.py makemigrations content
 python manage.py migrate
 ```
 
 4. start the project
 
-```python
+```bash
 python manage.py runserver
 ```
 
