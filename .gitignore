@@ -18,3 +18,4 @@ config/media
 *.njsproj
 *.sln
 *.sw?
+.env
